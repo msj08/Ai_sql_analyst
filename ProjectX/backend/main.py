@@ -8,10 +8,7 @@ from click import prompt
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-try:
-    import asyncpg
-except ImportError:
-    asyncpg = None
+import asyncpg
 import google.generativeai as genai
 from dotenv import load_dotenv
 
@@ -74,22 +71,13 @@ pinned_insights: List[Insight] = []
 @app.on_event("startup")
 async def startup_event():
     global db_pool
-    if asyncpg is None:
-        logger.warning("asyncpg not installed, skipping database connection pool setup")
-        return
     database_url = os.getenv("DATABASE_URL")
     if not database_url:
-        logger.warning("DATABASE_URL not set, using sample data mode")
-        # We'll create a mock database connection for demo purposes
-        return
-
-    try:
-        db_pool = await asyncpg.create_pool(database_url)
-        logger.info("Database connection pool created")
-    except Exception as e:
-        logger.error(f"Failed to create database pool: {e}")
-        # Continue without database for demo mode
-        # Continue without database for demo mode
+        raise RuntimeError(
+            "DATABASE_URL is not set. Configure it in backend/.env before starting the server."
+        )
+    db_pool = await asyncpg.create_pool(database_url)
+    logger.info("Database connection pool created")
 
 # Shutdown event
 @app.on_event("shutdown")
@@ -108,12 +96,6 @@ async def health_check():
 @app.post("/tools/list_tables")
 async def list_tables():
     """List all tables in the database"""
-    if not db_pool:
-        # Return sample tables for demo
-        return {
-            "tables": ["customers", "orders", "order_items", "products", "refunds"]
-        }
-
     try:
         async with db_pool.acquire() as conn:
             rows = await conn.fetch("""
@@ -130,73 +112,6 @@ async def list_tables():
 @app.post("/tools/get_schema")
 async def get_schema(table_name: str):
     """Get schema for a specific table"""
-    if not db_pool:
-        # Return sample schema for demo
-        sample_schemas = {
-            "customers": {
-                "columns": [
-                    {"name": "id", "type": "integer", "nullable": False, "primary_key": True},
-                    {"name": "name", "type": "varchar(255)", "nullable": False},
-                    {"name": "signup_date", "type": "date", "nullable": True},
-                    {"name": "region", "type": "varchar(100)", "nullable": True},
-                    {"name": "segment", "type": "varchar(50)", "nullable": True}
-                ],
-                "primary_key": ["id"],
-                "foreign_keys": []
-            },
-            "orders": {
-                "columns": [
-                    {"name": "id", "type": "integer", "nullable": False, "primary_key": True},
-                    {"name": "customer_id", "type": "integer", "nullable": False},
-                    {"name": "order_date", "type": "date", "nullable": False},
-                    {"name": "status", "type": "varchar(50)", "nullable": True},
-                    {"name": "channel", "type": "varchar(50)", "nullable": True}
-                ],
-                "primary_key": ["id"],
-                "foreign_keys": [
-                    {"column": "customer_id", "references": "customers(id)"}
-                ]
-            },
-            "order_items": {
-                "columns": [
-                    {"name": "id", "type": "integer", "nullable": False, "primary_key": True},
-                    {"name": "order_id", "type": "integer", "nullable": False},
-                    {"name": "product_id", "type": "integer", "nullable": False},
-                    {"name": "quantity", "type": "integer", "nullable": False},
-                    {"name": "unit_price", "type": "decimal(10,2)", "nullable": False}
-                ],
-                "primary_key": ["id"],
-                "foreign_keys": [
-                    {"column": "order_id", "references": "orders(id)"},
-                    {"column": "product_id", "references": "products(id)"}
-                ]
-            },
-            "products": {
-                "columns": [
-                    {"name": "id", "type": "integer", "nullable": False, "primary_key": True},
-                    {"name": "name", "type": "varchar(255)", "nullable": False},
-                    {"name": "category", "type": "varchar(100)", "nullable": True},
-                    {"name": "cost", "type": "decimal(10,2)", "nullable": True}
-                ],
-                "primary_key": ["id"],
-                "foreign_keys": []
-            },
-            "refunds": {
-                "columns": [
-                    {"name": "id", "type": "integer", "nullable": False, "primary_key": True},
-                    {"name": "order_id", "type": "integer", "nullable": False},
-                    {"name": "refund_date", "type": "date", "nullable": False},
-                    {"name": "amount", "type": "decimal(10,2)", "nullable": False},
-                    {"name": "reason", "type": "varchar(255)", "nullable": True}
-                ],
-                "primary_key": ["id"],
-                "foreign_keys": [
-                    {"column": "order_id", "references": "orders(id)"}
-                ]
-            }
-        }
-        return sample_schemas.get(table_name, {"error": f"Table {table_name} not found"})
-
     try:
         async with db_pool.acquire() as conn:
             # Get columns
@@ -263,53 +178,6 @@ async def get_schema(table_name: str):
 @app.post("/tools/sample_rows")
 async def sample_rows(table_name: str, limit: int = 5):
     """Get sample rows from a table"""
-    if not db_pool:
-        # Return sample data for demo
-        import random
-        from datetime import date, timedelta
-
-        sample_data = {
-            "customers": [
-                {"id": 1, "name": "John Doe", "signup_date": "2023-01-15", "region": "North", "segment": "Premium"},
-                {"id": 2, "name": "Jane Smith", "signup_date": "2023-02-20", "region": "South", "segment": "Standard"},
-                {"id": 3, "name": "Bob Johnson", "signup_date": "2023-03-10", "region": "East", "segment": "Basic"},
-                {"id": 4, "name": "Alice Brown", "signup_date": "2023-04-05", "region": "West", "segment": "Premium"},
-                {"id": 5, "name": "Charlie Wilson", "signup_date": "2023-05-12", "region": "North", "segment": "Standard"}
-            ],
-            "orders": [
-                {"id": 101, "customer_id": 1, "order_date": "2024-01-10", "status": "completed", "channel": "web"},
-                {"id": 102, "customer_id": 2, "order_date": "2024-01-12", "status": "completed", "channel": "mobile"},
-                {"id": 103, "customer_id": 3, "order_date": "2024-01-15", "status": "pending", "channel": "web"},
-                {"id": 104, "customer_id": 1, "order_date": "2024-01-18", "status": "completed", "channel": "mobile"},
-                {"id": 105, "customer_id": 4, "order_date": "2024-01-20", "status": "shipped", "channel": "web"}
-            ],
-            "order_items": [
-                {"id": 1, "order_id": 101, "product_id": 1, "quantity": 2, "unit_price": 29.99},
-                {"id": 2, "order_id": 101, "product_id": 2, "quantity": 1, "unit_price": 15.50},
-                {"id": 3, "order_id": 102, "product_id": 3, "quantity": 3, "unit_price": 9.99},
-                {"id": 4, "order_id": 103, "product_id": 1, "quantity": 1, "unit_price": 29.99},
-                {"id": 5, "order_id": 104, "product_id": 4, "quantity": 1, "unit_price": 49.99}
-            ],
-            "products": [
-                {"id": 1, "name": "Laptop", "category": "Electronics", "cost": 800.00},
-                {"id": 2, "name": "Mouse", "category": "Electronics", "cost": 15.00},
-                {"id": 3, "name": "Keyboard", "category": "Electronics", "cost": 25.00},
-                {"id": 4, "name": "Monitor", "category": "Electronics", "cost": 200.00},
-                {"id": 5, "name": "USB Cable", "category": "Electronics", "cost": 5.00}
-            ],
-            "refunds": [
-                {"id": 1, "order_id": 102, "refund_date": "2024-01-18", "amount": 30.00, "reason": "defective"},
-                {"id": 2, "order_id": 104, "refund_date": "2024-01-22", "amount": 25.00, "reason": "changed_mind"}
-            ]
-        }
-
-        data = sample_data.get(table_name, [])
-        return {
-            "rows": data[:limit],
-            "row_count": len(data),
-            "columns": list(data[0].keys()) if data else []
-        }
-
     try:
         async with db_pool.acquire() as conn:
             rows = await conn.fetch(f"SELECT * FROM {table_name} LIMIT $1", limit)
@@ -343,40 +211,6 @@ async def run_sql(request: SQLQueryRequest):
                     detail=f"Read-only mode prohibits {keyword} operations"
                 )
 
-    if not db_pool:
-        # Return mock results for demo
-        logger.info("Running in demo mode - returning mock results")
-
-        # Simple mock based on query patterns
-        if "REVENUE" in query_upper and "MONTH" in query_upper:
-            # Mock revenue by month data
-            mock_data = []
-            base_date = datetime(2024, 1, 1)
-            for i in range(6):
-                month_date = base_date.replace(month=base_date.month + i)
-                mock_data.append({
-                    "month": month_date.strftime("%Y-%m"),
-                    "revenue": round(10000 + (i * 1500) + (hash(str(i)) % 2000), 2)
-                })
-            return {
-                "rows": mock_data,
-                "row_count": len(mock_data),
-                "columns": ["month", "revenue"]
-            }
-        elif "COUNT" in query_upper or "SUM" in query_upper:
-            return {
-                "rows": [{"count": 150, "total": 45000.00}],
-                "row_count": 1,
-                "columns": ["count", "total"]
-            }
-        else:
-            # Generic mock data
-            return {
-                "rows": [{"id": 1, "name": "Sample Data", "value": 100}],
-                "row_count": 1,
-                "columns": ["id", "name", "value"]
-            }
-
     try:
         async with db_pool.acquire() as conn:
             # Log the query for auditability
@@ -406,12 +240,6 @@ async def run_sql(request: SQLQueryRequest):
 @app.post("/tools/explain_query")
 async def explain_query(query: str):
     """Get query plan/explanation"""
-    if not db_pool:
-        return {
-            "plan": "Demo mode - query plan not available",
-            "estimated_cost": "N/A"
-        }
-
     try:
         async with db_pool.acquire() as conn:
             # Get EXPLAIN ANALYZE plan
