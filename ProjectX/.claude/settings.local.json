@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(cd D:\\\\ProjectX; $env:PYTHONIOENCODING='utf-8'; python VERIFY_SETUP.py)"
+    ]
+  }
+}
