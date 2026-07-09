@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Box, Typography, CircularProgress } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
@@ -14,16 +14,16 @@ const ACCENT = "#22d3ee";
 // Staggers the reveal of a group of child nodes.
 const groupVariants = {
   hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.08 } },
+  show: { opacity: 1, transition: { staggerChildren: 0.04 } },
 };
 
 const nodeVariants = {
-  hidden: { opacity: 0, y: -14, scale: 0.85 },
+  hidden: { opacity: 0, y: -10, scale: 0.9 },
   show: {
     opacity: 1,
     y: 0,
     scale: 1,
-    transition: { type: "spring", stiffness: 260, damping: 20 },
+    transition: { type: "spring", stiffness: 500, damping: 32 },
   },
 };
 
@@ -148,28 +148,34 @@ export default function DatabaseExplorer({ onSelectTable }) {
   const [loadingTables, setLoadingTables] = useState(false);
   const [error, setError] = useState(null);
 
+  // Prefetch the table list as soon as the dashboard mounts, so it's already
+  // in memory by the time the user clicks through — no wait on the click.
+  useEffect(() => {
+    let active = true;
+    setLoadingTables(true);
+    axios
+      .post(`${backendUrl}/tools/list_tables`)
+      .then((res) => {
+        if (active) setTables(res.data.tables || []);
+      })
+      .catch(() => {
+        if (active) setError("Could not load tables. Please try again.");
+      })
+      .finally(() => {
+        if (active) setLoadingTables(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const handleDatabaseClick = () => {
     setDbExpanded((prev) => !prev);
   };
 
-  const handleDbNodeClick = async () => {
-    if (tablesExpanded) {
-      setTablesExpanded(false);
-      return;
-    }
-    if (tables.length === 0) {
-      setLoadingTables(true);
-      setError(null);
-      try {
-        const res = await axios.post(`${backendUrl}/tools/list_tables`);
-        setTables(res.data.tables || []);
-      } catch (e) {
-        setError("Could not load tables. Please try again.");
-      } finally {
-        setLoadingTables(false);
-      }
-    }
-    setTablesExpanded(true);
+  const handleDbNodeClick = () => {
+    // Tables are already prefetched — just toggle the branch open/closed.
+    setTablesExpanded((prev) => !prev);
   };
 
   return (
