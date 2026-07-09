@@ -145,28 +145,6 @@ export default function MessageBubble({ sender, text, detail, sql, notes, nextSt
         </Paper>
       )}
 
-      {/* The generated SQL, shown read-only */}
-      {!isUser && sql && (
-        <Paper
-          sx={{
-            p: 1.5,
-            mt: 1,
-            width: "85%",
-            borderRadius: 3,
-            bgcolor: "#0b1220",
-            color: "#93c5fd",
-            overflowX: "auto",
-          }}
-        >
-          <Typography
-            variant="caption"
-            sx={{ color: "#64748b", display: "block", mb: 0.5 }}
-          >
-            SQL
-          </Typography>
-          <pre style={{ margin: 0, fontSize: 12, whiteSpace: "pre-wrap" }}>{sql}</pre>
-        </Paper>
-      )}
     </motion.div>
   );
 }

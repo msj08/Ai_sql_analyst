@@ -441,11 +441,20 @@ Return ONLY JSON in exactly this shape (no markdown, no extra text):
 
     except Exception as e:
         logger.exception("Error processing question")
+        message = str(e)
+        # Give a clear message when we hit the Gemini rate limit / quota.
+        if "RESOURCE_EXHAUSTED" in message or "429" in message or "quota" in message.lower():
+            answer = (
+                "The AI is currently rate-limited (free-tier request quota reached). "
+                "Please wait a minute and try again."
+            )
+        else:
+            answer = "Sorry, something went wrong while answering that question."
         return {
-            "answer": "Sorry, something went wrong while answering that question.",
+            "answer": answer,
             "detail": {},
             "sql": "",
-            "notes": str(e),
+            "notes": "",
             "next_steps": [],
         }
 
