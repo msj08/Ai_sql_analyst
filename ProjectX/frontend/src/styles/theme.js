@@ -6,12 +6,13 @@ const theme = createTheme({
     mode: "light",
 
     primary: {
-      main: "#2563eb", // blue-600
-      dark: "#1d4ed8",
+      main: "#0ea5e9", // sky-500 (light blue)
+      dark: "#0284c7", // sky-600
+      contrastText: "#ffffff",
     },
 
     secondary: {
-      main: "#0f766e", // teal-700, used sparingly
+      main: "#0284c7", // sky-600, used sparingly
     },
 
     success: {
@@ -27,7 +28,7 @@ const theme = createTheme({
     },
 
     background: {
-      default: "#f8fafc", // slate-50
+      default: "#f0f9ff", // sky-50 (light blue tint)
       paper: "#ffffff",
     },
 
@@ -36,7 +37,7 @@ const theme = createTheme({
       secondary: "#64748b", // slate-500
     },
 
-    divider: "#e2e8f0", // slate-200
+    divider: "#e0f2fe", // sky-100
   },
 
   shape: {
@@ -60,7 +61,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundImage: "none",
-          border: "1px solid #e2e8f0",
+          border: "1px solid #e0f2fe",
           boxShadow: "0 1px 3px rgba(15,23,42,0.06)",
         },
       },
@@ -70,7 +71,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 14,
-          border: "1px solid #e2e8f0",
+          border: "1px solid #e0f2fe",
           boxShadow: "0 1px 3px rgba(15,23,42,0.06)",
         },
       },

@@ -135,7 +135,7 @@ function App() {
         display: 'flex',
         flexDirection: 'column',
         height: '100vh',
-        bgcolor: '#f8fafc',
+        bgcolor: '#f0f9ff',
         color: '#0f172a'
       }}
     >
@@ -148,7 +148,7 @@ function App() {
           px: 2,
           py: 1.5,
           bgcolor: '#ffffff',
-          borderBottom: '1px solid #e2e8f0',
+          borderBottom: '1px solid #e0f2fe',
           flexShrink: 0
         }}
       >
@@ -203,7 +203,7 @@ function App() {
       <Box
         sx={{
           bgcolor: '#ffffff',
-          borderTop: '1px solid #e2e8f0',
+          borderTop: '1px solid #e0f2fe',
           px: 2,
           py: 2,
           flexShrink: 0

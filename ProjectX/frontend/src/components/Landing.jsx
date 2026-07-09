@@ -49,7 +49,7 @@ const steps = [
 
 export default function Landing({ onLaunch, onChat }) {
   return (
-    <Box sx={{ bgcolor: "#f8fafc", minHeight: "100vh" }}>
+    <Box sx={{ bgcolor: "#f0f9ff", minHeight: "100vh" }}>
       {/* Top navigation */}
       <Box
         sx={{
@@ -58,7 +58,7 @@ export default function Landing({ onLaunch, onChat }) {
           zIndex: 10,
           bgcolor: "rgba(255,255,255,0.9)",
           backdropFilter: "blur(8px)",
-          borderBottom: "1px solid #e2e8f0",
+          borderBottom: "1px solid #e0f2fe",
         }}
       >
         <Container maxWidth="lg">
@@ -110,7 +110,7 @@ export default function Landing({ onLaunch, onChat }) {
         <Chip
           label="AI-powered SQL analytics"
           variant="outlined"
-          sx={{ mb: 3, borderColor: "#cbd5e1", color: "text.secondary" }}
+          sx={{ mb: 3, borderColor: "#bae6fd", color: "text.secondary" }}
         />
         <Typography
           variant="h3"
@@ -143,7 +143,7 @@ export default function Landing({ onLaunch, onChat }) {
       <Container maxWidth="lg" sx={{ pb: 10 }}>
         <Box
           sx={{
-            border: "2px dashed #cbd5e1",
+            border: "2px dashed #bae6fd",
             borderRadius: 4,
             bgcolor: "#ffffff",
             height: { xs: 220, md: 380 },
@@ -193,7 +193,7 @@ export default function Landing({ onLaunch, onChat }) {
       </Container>
 
       {/* How it works */}
-      <Box sx={{ bgcolor: "#ffffff", borderTop: "1px solid #e2e8f0", py: 10 }}>
+      <Box sx={{ bgcolor: "#ffffff", borderTop: "1px solid #e0f2fe", py: 10 }}>
         <Container maxWidth="lg">
           <Typography variant="h4" sx={{ fontWeight: 800, textAlign: "center", mb: 6 }}>
             How it works

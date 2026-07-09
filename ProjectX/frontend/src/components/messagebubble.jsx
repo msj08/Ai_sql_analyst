@@ -122,9 +122,9 @@ export default function MessageBubble({ sender, text, detail, sql, notes, nextSt
           p: 2,
           maxWidth: "85%",
           borderRadius: 3,
-          bgcolor: isUser ? "#2563eb" : "#ffffff",
+          bgcolor: isUser ? "#0ea5e9" : "#ffffff",
           color: isUser ? "white" : "#0f172a",
-          border: isUser ? "none" : "1px solid #e2e8f0",
+          border: isUser ? "none" : "1px solid #e0f2fe",
         }}
       >
         <Typography sx={{ whiteSpace: "pre-wrap" }}>{text}</Typography>
