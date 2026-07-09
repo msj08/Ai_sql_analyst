@@ -4,7 +4,6 @@ import logging
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 import asyncio
-from click import prompt
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -35,9 +34,14 @@ db_pool: Any = None
 
 
 # Gemini client
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel("gemini-2.5-flash")
-print("Gemini Key Loaded:", os.getenv("GEMINI_API_KEY"))
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+if not GEMINI_API_KEY:
+    raise RuntimeError(
+        "GEMINI_API_KEY is not set. Configure it in backend/.env before starting the server."
+    )
+genai.configure(api_key=GEMINI_API_KEY)
+model = genai.GenerativeModel(os.getenv("GEMINI_MODEL", "gemini-2.5-flash"))
+logger.info("Gemini client configured")
 
 
 # Pydantic models
@@ -344,137 +348,105 @@ async def process_user_question(question: str, session_id=None):
     logger.info(question)
 
     prompt = f"""
-You are Athena, an SQL expert.
+You are Athena, an expert data analyst working with a PostgreSQL database.
 
-Database:
+Rules for the "sql" field:
+- Generate ONLY PostgreSQL-compatible SQL. Never use MySQL syntax such as
+  SHOW TABLES, SHOW COLUMNS, DESCRIBE, or backticks.
+- Write a single read-only SELECT statement. Never INSERT, UPDATE, DELETE,
+  DROP, ALTER, TRUNCATE, or CREATE.
+- To list the tables, query information_schema.tables
+  (e.g. SELECT table_name FROM information_schema.tables WHERE table_schema='public').
+- If the question is conversational (like "hi") and needs no data, leave "sql" empty.
 
-customers(id,name,signup_date,region,segment)
+Database schema:
 
-orders(id,customer_id,order_date,status,channel)
+customers(id, name, signup_date, region, segment)
+orders(id, customer_id, order_date, status, channel)
+order_items(id, order_id, product_id, quantity, unit_price)
+products(id, name, category, cost)
+refunds(id, order_id, refund_date, amount, reason)
 
-order_items(id,order_id,product_id,quantity,unit_price)
-
-products(id,name,category,cost)
-
-refunds(id,order_id,refund_date,amount,reason)
+Revenue = SUM(order_items.quantity * order_items.unit_price).
 
 User Question:
 
 {question}
 
-Return ONLY JSON.
+Return ONLY JSON in exactly this shape (no markdown, no extra text):
 
 {{
-    "answer":"...",
-    "sql":"...",
-    "notes":"...",
-    "next_steps":[]
+    "answer": "a short natural-language answer",
+    "sql": "the PostgreSQL query, or empty string if none is needed",
+    "notes": "any caveats",
+    "next_steps": []
 }}
 """
 
     try:
-
-        print("STEP 1 - process_user_question called")
-        print("STEP 2 - Prompt created")
-
+        logger.info("Sending question to Gemini")
         response = model.generate_content(prompt)
 
-        print("STEP 3 - Gemini responded")
-        print("========== GEMINI RAW RESPONSE ==========")
-        print(response.text)
-        print("=========================================")
-
+        # Gemini often wraps its JSON in a ```json ... ``` fence; strip it.
         text = response.text.replace("```json", "").replace("```", "").strip()
 
-        data = json.loads(text)
+        try:
+            data = json.loads(text)
+        except json.JSONDecodeError:
+            logger.error("Gemini did not return valid JSON: %s", text)
+            return {
+                "answer": "Sorry, I couldn't interpret that question. Please try rephrasing it.",
+                "detail": {},
+                "sql": "",
+                "notes": "",
+                "next_steps": [],
+            }
 
         sql = (data.get("sql") or "").strip()
 
-        # If Gemini didn't generate SQL, don't execute anything.
+        # If Gemini didn't produce SQL, return the answer without querying anything.
         if not sql:
             return {
                 "answer": data.get("answer"),
                 "detail": {},
                 "sql": "",
                 "notes": data.get("notes"),
-                "next_steps": data.get("next_steps", [])
+                "next_steps": data.get("next_steps", []),
             }
 
-        # Execute SQL
-        sql_result = await run_sql(
-            SQLQueryRequest(
-                query=sql,
-                read_only=True
-            )
-        )
-
+        # Run the generated SQL (read-only) against the database.
+        sql_result = await run_sql(SQLQueryRequest(query=sql, read_only=True))
         rows = sql_result["rows"]
-        print("========== SQL RESULT ==========")
-        print(rows)
 
-        # Build chart
         chart = build_chart(rows)
-        print("========== CHART ==========")
-        print(chart)
 
-        # Save insight
+        # Save the result as a pinned insight for the dashboard.
         insight = Insight(
             id=f"insight_{datetime.utcnow().timestamp()}",
             title=question,
             summary=data.get("answer"),
-            chart_or_table_ref=chart,
+            chart_or_table_ref=chart or {},
             sql=sql,
-            created_at=datetime.utcnow()
+            created_at=datetime.utcnow(),
         )
-
         pinned_insights.append(insight)
 
         return {
             "answer": data.get("answer"),
-            "detail": {
-                "chart": chart,
-                "table": rows
-            },
+            "detail": {"chart": chart, "table": rows},
             "sql": sql,
             "notes": data.get("notes"),
-            "next_steps": data.get("next_steps", [])
+            "next_steps": data.get("next_steps", []),
         }
 
     except Exception as e:
-
-        logger.exception(e)
-        print("========== FINAL RESPONSE ==========")
-        print({
-            "answer": data.get("answer"),
-            "detail": {
-                "chart": chart,
-                "table": rows
-            },
-            "sql": sql,
-            "notes": data.get("notes"),
-            "next_steps": data.get("next_steps", [])
-        })
-
+        logger.exception("Error processing question")
         return {
-            "answer": data.get("answer"),
-            "detail": {
-                "chart": chart,
-                "table": rows
-            },
-            "sql": sql,
-            "notes": data.get("notes"),
-            "next_steps": data.get("next_steps", [])
-        }
-
-    except Exception as e:
-        logger.exception(e)
-
-        return {
-            "answer": str(e),
+            "answer": "Sorry, something went wrong while answering that question.",
             "detail": {},
             "sql": "",
-            "notes": "",
-            "next_steps": []
+            "notes": str(e),
+            "next_steps": [],
         }
 
 if __name__ == "__main__":

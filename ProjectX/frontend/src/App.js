@@ -31,6 +31,28 @@ import KPICards from "./components/kpicards";
 import MessageBubble from "./components/messagebubble";
 import CloseIcon from '@mui/icons-material/Close';
 
+// Copy text to the clipboard. navigator.clipboard only exists in a secure
+// context (HTTPS or localhost); fall back to a temporary textarea otherwise
+// so this never throws on a plain-http LAN address.
+const copyToClipboard = (text) => {
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).catch(() => {});
+    return;
+  }
+  const el = document.createElement("textarea");
+  el.value = text;
+  el.style.position = "fixed";
+  el.style.opacity = "0";
+  document.body.appendChild(el);
+  el.select();
+  try {
+    document.execCommand("copy");
+  } catch (e) {
+    // ignore — clipboard simply isn't available
+  }
+  document.body.removeChild(el);
+};
+
 
 function App() {
 
@@ -282,7 +304,7 @@ function App() {
 
 
                   {messages.map((msg) => (
-                    <messagebubble
+                    <MessageBubble
                       key={msg.id}
                       sender={msg.sender}
                       text={msg.text}
@@ -742,9 +764,7 @@ function App() {
                                 variant="text"
 
                                 onClick={
-                                  ()=>navigator.clipboard.writeText(
-                                    insight.sql
-                                  )
+                                  () => copyToClipboard(insight.sql)
                                 }
 
                               >
