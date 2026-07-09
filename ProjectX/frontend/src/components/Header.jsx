@@ -1,45 +1,51 @@
 import React from "react";
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Box,
-  Chip
-} from "@mui/material";
+import { AppBar, Toolbar, Typography, Box, Chip } from "@mui/material";
 
-import SmartToyIcon from "@mui/icons-material/SmartToy";
-import PsychologyIcon from "@mui/icons-material/Psychology";
+import InsightsIcon from "@mui/icons-material/Insights";
+import CircleIcon from "@mui/icons-material/Circle";
 
 const Header = () => {
   return (
     <AppBar
-      position="static"
+      position="fixed"
       elevation={0}
       sx={{
-        background:
-          "linear-gradient(90deg,#7C3AED 0%, #3B82F6 50%, #06B6D4 100%)",
-        borderBottom: "1px solid rgba(255,255,255,.08)",
+        background: "#ffffff",
+        color: "#0f172a",
+        borderBottom: "1px solid #e2e8f0",
       }}
     >
       <Toolbar sx={{ justifyContent: "space-between" }}>
-        <Box display="flex" alignItems="center" gap={2}>
-          <SmartToyIcon sx={{ fontSize: 40 }} />
+        <Box display="flex" alignItems="center" gap={1.5}>
+          <Box
+            sx={{
+              width: 40,
+              height: 40,
+              borderRadius: 2,
+              bgcolor: "primary.main",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <InsightsIcon sx={{ color: "white" }} />
+          </Box>
 
           <Box>
-            <Typography variant="h5" fontWeight="bold">
-              Athena AI SQL Analyst
+            <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1.1 }}>
+              Athena
             </Typography>
-
-            <Typography variant="body2">
-              Intelligent Analytics Dashboard
+            <Typography variant="caption" color="text.secondary">
+              AI SQL Analyst
             </Typography>
           </Box>
         </Box>
 
         <Chip
-          icon={<PsychologyIcon />}
-          label="AI Connected"
-          color="success"
+          icon={<CircleIcon sx={{ fontSize: "10px !important", color: "#16a34a !important" }} />}
+          label="Connected"
+          variant="outlined"
+          sx={{ borderColor: "#e2e8f0", color: "text.secondary" }}
         />
       </Toolbar>
     </AppBar>

@@ -1,33 +1,35 @@
 import React from "react";
-import { Grid, Card, CardContent, Typography } from "@mui/material";
+import { Grid, Card, CardContent, Typography, Box } from "@mui/material";
 
 const cards = [
   { title: "Queries", value: "0" },
   { title: "Insights", value: "0" },
   { title: "Charts", value: "0" },
-  { title: "Status", value: "Online" }
+  { title: "Status", value: "Online", accent: "#16a34a" },
 ];
 
 const KPICards = () => {
   return (
-    <Grid container spacing={2} sx={{ mb: 3 }}>
+    <Grid container spacing={2} sx={{ mb: 1 }}>
       {cards.map((card) => (
         <Grid item xs={12} sm={6} md={3} key={card.title}>
-          <Card
-            sx={{
-              background: "#1e293b",
-              color: "white",
-              borderRadius: 3
-            }}
-          >
+          <Card sx={{ bgcolor: "#ffffff", borderRadius: 3 }}>
             <CardContent>
-              <Typography variant="body2" color="gray">
+              <Typography
+                variant="overline"
+                sx={{ color: "text.secondary", letterSpacing: "0.06em" }}
+              >
                 {card.title}
               </Typography>
 
-              <Typography variant="h4" fontWeight="bold">
-                {card.value}
-              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Typography
+                  variant="h4"
+                  sx={{ fontWeight: 700, color: card.accent || "text.primary" }}
+                >
+                  {card.value}
+                </Typography>
+              </Box>
             </CardContent>
           </Card>
         </Grid>

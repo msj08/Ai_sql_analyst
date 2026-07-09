@@ -26,9 +26,11 @@ import {
 import Header from "./components/Header";
 import KPICards from "./components/kpicards";
 import MessageBubble from "./components/messagebubble";
+import Landing from "./components/Landing";
 import CloseIcon from '@mui/icons-material/Close';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ChatIcon from '@mui/icons-material/Chat';
+import HomeIcon from '@mui/icons-material/Home';
 
 const backendUrl = 'http://localhost:8000';
 
@@ -38,8 +40,8 @@ function App() {
   const [insights, setInsights] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Which page is showing: 'dashboard' or the full-screen 'chat'.
-  const [page, setPage] = useState('dashboard');
+  // Which page is showing: 'landing', 'dashboard', or the full-screen 'chat'.
+  const [page, setPage] = useState('landing');
 
   const sendMessage = async () => {
     if (!inputValue.trim()) return;
@@ -133,8 +135,8 @@ function App() {
         display: 'flex',
         flexDirection: 'column',
         height: '100vh',
-        bgcolor: '#0f172a',
-        color: 'white'
+        bgcolor: '#f8fafc',
+        color: '#0f172a'
       }}
     >
       {/* Top bar */}
@@ -145,7 +147,8 @@ function App() {
           gap: 1,
           px: 2,
           py: 1.5,
-          borderBottom: '1px solid rgba(255,255,255,0.08)',
+          bgcolor: '#ffffff',
+          borderBottom: '1px solid #e2e8f0',
           flexShrink: 0
         }}
       >
@@ -153,11 +156,11 @@ function App() {
           variant="text"
           startIcon={<ArrowBackIcon />}
           onClick={() => setPage('dashboard')}
-          sx={{ color: 'white' }}
+          sx={{ color: 'primary.main' }}
         >
           Dashboard
         </Button>
-        <Typography variant="h6" sx={{ fontWeight: 600 }}>
+        <Typography variant="h6" sx={{ fontWeight: 700 }}>
           Athena
         </Typography>
       </Box>
@@ -199,7 +202,8 @@ function App() {
       {/* Input bar pinned to the bottom */}
       <Box
         sx={{
-          borderTop: '1px solid rgba(255,255,255,0.08)',
+          bgcolor: '#ffffff',
+          borderTop: '1px solid #e2e8f0',
           px: 2,
           py: 2,
           flexShrink: 0
@@ -242,6 +246,15 @@ function App() {
   // ------------------------------------------------------------------
   const renderDashboardPage = () => (
     <Box>
+      <Button
+        variant="text"
+        startIcon={<HomeIcon />}
+        onClick={() => setPage('landing')}
+        sx={{ mb: 2 }}
+      >
+        Home
+      </Button>
+
       <KPICards />
 
       <Box
@@ -359,6 +372,14 @@ function App() {
       </Paper>
     </Box>
   );
+
+  if (page === 'landing') {
+    return (
+      <div className="App">
+        <Landing onLaunch={() => setPage('dashboard')} onChat={() => setPage('chat')} />
+      </div>
+    );
+  }
 
   if (page === 'chat') {
     return <div className="App">{renderChatPage()}</div>;

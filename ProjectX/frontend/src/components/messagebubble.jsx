@@ -117,12 +117,14 @@ export default function MessageBubble({ sender, text, detail, sql, notes, nextSt
     >
       {/* The text answer bubble */}
       <Paper
+        elevation={0}
         sx={{
           p: 2,
           maxWidth: "85%",
           borderRadius: 3,
-          bgcolor: isUser ? "#3b82f6" : "#1e293b",
-          color: "white",
+          bgcolor: isUser ? "#2563eb" : "#ffffff",
+          color: isUser ? "white" : "#0f172a",
+          border: isUser ? "none" : "1px solid #e2e8f0",
         }}
       >
         <Typography sx={{ whiteSpace: "pre-wrap" }}>{text}</Typography>

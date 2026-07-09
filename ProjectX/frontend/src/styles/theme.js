@@ -1,59 +1,54 @@
 import { createTheme } from "@mui/material/styles";
 
+// Light, formal palette: slate neutrals with a single professional blue accent.
 const theme = createTheme({
   palette: {
-    mode: "dark",
+    mode: "light",
 
     primary: {
-      main: "#7C3AED",
+      main: "#2563eb", // blue-600
+      dark: "#1d4ed8",
     },
 
     secondary: {
-      main: "#06B6D4",
+      main: "#0f766e", // teal-700, used sparingly
     },
 
     success: {
-      main: "#22C55E",
+      main: "#16a34a",
     },
 
     error: {
-      main: "#EF4444",
+      main: "#dc2626",
     },
 
     warning: {
-      main: "#F59E0B",
+      main: "#d97706",
     },
 
     background: {
-      default: "#0B1120",
-      paper: "#111827",
+      default: "#f8fafc", // slate-50
+      paper: "#ffffff",
     },
 
     text: {
-      primary: "#F8FAFC",
-      secondary: "#94A3B8",
+      primary: "#0f172a", // slate-900
+      secondary: "#64748b", // slate-500
     },
+
+    divider: "#e2e8f0", // slate-200
   },
 
   shape: {
-    borderRadius: 16,
+    borderRadius: 12,
   },
 
   typography: {
     fontFamily: "'Inter', sans-serif",
-
-    h4: {
-      fontWeight: 700,
-    },
-
-    h5: {
-      fontWeight: 600,
-    },
-
-    h6: {
-      fontWeight: 600,
-    },
-
+    h3: { fontWeight: 800 },
+    h4: { fontWeight: 700 },
+    h5: { fontWeight: 700 },
+    h6: { fontWeight: 600 },
     button: {
       textTransform: "none",
       fontWeight: 600,
@@ -65,8 +60,8 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundImage: "none",
-          backdropFilter: "blur(12px)",
-          border: "1px solid rgba(255,255,255,0.08)",
+          border: "1px solid #e2e8f0",
+          boxShadow: "0 1px 3px rgba(15,23,42,0.06)",
         },
       },
     },
@@ -74,8 +69,9 @@ const theme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 20,
-          background: "rgba(17,24,39,.92)",
+          borderRadius: 14,
+          border: "1px solid #e2e8f0",
+          boxShadow: "0 1px 3px rgba(15,23,42,0.06)",
         },
       },
     },
@@ -83,8 +79,9 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 14,
-          padding: "10px 22px",
+          borderRadius: 10,
+          padding: "9px 20px",
+          boxShadow: "none",
         },
       },
     },
