@@ -13,7 +13,7 @@ const KPICards = () => {
     <Grid container spacing={2} sx={{ mb: 1 }}>
       {cards.map((card) => (
         <Grid item xs={12} sm={6} md={3} key={card.title}>
-          <Card sx={{ bgcolor: "#ffffff", borderRadius: 3 }}>
+          <Card sx={{ bgcolor: "#111a2b", borderRadius: 3 }}>
             <CardContent>
               <Typography
                 variant="overline"

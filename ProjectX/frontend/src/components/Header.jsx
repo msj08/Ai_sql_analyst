@@ -10,9 +10,9 @@ const Header = () => {
       position="fixed"
       elevation={0}
       sx={{
-        background: "#ffffff",
-        color: "#0f172a",
-        borderBottom: "1px solid #e2e8f0",
+        background: "#0b1220",
+        color: "#e2e8f0",
+        borderBottom: "1px solid rgba(255,255,255,0.08)",
       }}
     >
       <Toolbar sx={{ justifyContent: "space-between" }}>
@@ -28,7 +28,7 @@ const Header = () => {
               justifyContent: "center",
             }}
           >
-            <InsightsIcon sx={{ color: "white" }} />
+            <InsightsIcon sx={{ color: "#04222b" }} />
           </Box>
 
           <Box>
@@ -45,7 +45,7 @@ const Header = () => {
           icon={<CircleIcon sx={{ fontSize: "10px !important", color: "#16a34a !important" }} />}
           label="Connected"
           variant="outlined"
-          sx={{ borderColor: "#e2e8f0", color: "text.secondary" }}
+          sx={{ borderColor: "rgba(255,255,255,0.12)", color: "text.secondary" }}
         />
       </Toolbar>
     </AppBar>

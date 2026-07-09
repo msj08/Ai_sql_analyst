@@ -1,43 +1,43 @@
 import { createTheme } from "@mui/material/styles";
 
-// Light, formal palette: slate neutrals with a single professional blue accent.
+// Dark navy + cyan palette, matching the landing page / hero video.
 const theme = createTheme({
   palette: {
-    mode: "light",
+    mode: "dark",
 
     primary: {
-      main: "#0ea5e9", // sky-500 (light blue)
-      dark: "#0284c7", // sky-600
-      contrastText: "#ffffff",
+      main: "#22d3ee", // cyan-400 (accent from the chart video)
+      dark: "#06b6d4",
+      contrastText: "#04222b",
     },
 
     secondary: {
-      main: "#0284c7", // sky-600, used sparingly
+      main: "#38bdf8", // sky-400
     },
 
     success: {
-      main: "#16a34a",
+      main: "#22c55e",
     },
 
     error: {
-      main: "#dc2626",
+      main: "#ef4444",
     },
 
     warning: {
-      main: "#d97706",
+      main: "#f59e0b",
     },
 
     background: {
-      default: "#f0f9ff", // sky-50 (light blue tint)
-      paper: "#ffffff",
+      default: "#0b1220", // deep navy
+      paper: "#111a2b",
     },
 
     text: {
-      primary: "#0f172a", // slate-900
-      secondary: "#64748b", // slate-500
+      primary: "#e2e8f0", // slate-200
+      secondary: "#94a3b8", // slate-400
     },
 
-    divider: "#e0f2fe", // sky-100
+    divider: "rgba(255,255,255,0.08)",
   },
 
   shape: {
@@ -61,8 +61,8 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundImage: "none",
-          border: "1px solid #e0f2fe",
-          boxShadow: "0 1px 3px rgba(15,23,42,0.06)",
+          border: "1px solid rgba(255,255,255,0.08)",
+          boxShadow: "0 1px 3px rgba(0,0,0,0.4)",
         },
       },
     },
@@ -71,8 +71,8 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 14,
-          border: "1px solid #e0f2fe",
-          boxShadow: "0 1px 3px rgba(15,23,42,0.06)",
+          border: "1px solid rgba(255,255,255,0.08)",
+          boxShadow: "0 1px 3px rgba(0,0,0,0.4)",
         },
       },
     },

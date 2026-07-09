@@ -135,8 +135,8 @@ function App() {
         display: 'flex',
         flexDirection: 'column',
         height: '100vh',
-        bgcolor: '#f0f9ff',
-        color: '#0f172a'
+        bgcolor: '#0b1220',
+        color: '#e2e8f0'
       }}
     >
       {/* Top bar */}
@@ -147,8 +147,8 @@ function App() {
           gap: 1,
           px: 2,
           py: 1.5,
-          bgcolor: '#ffffff',
-          borderBottom: '1px solid #e0f2fe',
+          bgcolor: '#111a2b',
+          borderBottom: '1px solid rgba(255,255,255,0.08)',
           flexShrink: 0
         }}
       >
@@ -202,8 +202,8 @@ function App() {
       {/* Input bar pinned to the bottom */}
       <Box
         sx={{
-          bgcolor: '#ffffff',
-          borderTop: '1px solid #e0f2fe',
+          bgcolor: '#111a2b',
+          borderTop: '1px solid rgba(255,255,255,0.08)',
           px: 2,
           py: 2,
           flexShrink: 0
@@ -348,7 +348,8 @@ function App() {
                       style={{
                         maxHeight: '150px',
                         overflowY: 'auto',
-                        backgroundColor: '#fafafa',
+                        backgroundColor: 'rgba(255,255,255,0.04)',
+                        borderRadius: 8,
                         padding: 8
                       }}
                     >
