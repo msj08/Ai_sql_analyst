@@ -12,22 +12,28 @@ import {
 import Header from "./components/Header";
 import MessageBubble from "./components/messagebubble";
 import Landing from "./components/Landing";
+import DatabaseExplorer from "./components/DatabaseExplorer";
+import TableView from "./components/TableView";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ChatIcon from '@mui/icons-material/Chat';
 import HomeIcon from '@mui/icons-material/Home';
 
-// In production, set REACT_APP_BACKEND_URL (e.g. your Render URL) in the host's
-// environment variables. Falls back to localhost for local development.
-// Trailing slashes are stripped so "https://host/" + "/chat" doesn't become "//chat".
-const backendUrl = (process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000').replace(/\/+$/, '');
+import { backendUrl } from "./config";
 
 function App() {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Which page is showing: 'landing', 'dashboard', or the full-screen 'chat'.
+  // Which page is showing: 'landing', 'dashboard', 'chat', or 'table'.
   const [page, setPage] = useState('landing');
+  // When on the 'table' page, which table is open.
+  const [activeTable, setActiveTable] = useState(null);
+
+  const openTable = (name) => {
+    setActiveTable(name);
+    setPage('table');
+  };
 
   const sendMessage = async () => {
     if (!inputValue.trim()) return;
@@ -207,31 +213,34 @@ function App() {
   // ------------------------------------------------------------------
   // DASHBOARD PAGE
   // ------------------------------------------------------------------
-  // Cleared dashboard — will be rebuilt later. Only the two nav buttons remain.
   const renderDashboardPage = () => (
-    <Box
-      sx={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-      }}
-    >
-      <Button
-        variant="text"
-        startIcon={<HomeIcon />}
-        onClick={() => setPage('landing')}
+    <Box>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}
       >
-        Home
-      </Button>
+        <Button
+          variant="text"
+          startIcon={<HomeIcon />}
+          onClick={() => setPage('landing')}
+        >
+          Home
+        </Button>
 
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<ChatIcon />}
-        onClick={() => setPage('chat')}
-      >
-        Open Chatbot
-      </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<ChatIcon />}
+          onClick={() => setPage('chat')}
+        >
+          Open Chatbot
+        </Button>
+      </Box>
+
+      <DatabaseExplorer onSelectTable={openTable} />
     </Box>
   );
 
@@ -245,6 +254,14 @@ function App() {
 
   if (page === 'chat') {
     return <div className="App">{renderChatPage()}</div>;
+  }
+
+  if (page === 'table') {
+    return (
+      <div className="App">
+        <TableView tableName={activeTable} onBack={() => setPage('dashboard')} />
+      </div>
+    );
   }
 
   return (
