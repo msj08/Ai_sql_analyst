@@ -32,7 +32,10 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ChatIcon from '@mui/icons-material/Chat';
 import HomeIcon from '@mui/icons-material/Home';
 
-const backendUrl = 'http://localhost:8000';
+// In production, set REACT_APP_BACKEND_URL (e.g. your Render URL) in the host's
+// environment variables. Falls back to localhost for local development.
+// Trailing slashes are stripped so "https://host/" + "/chat" doesn't become "//chat".
+const backendUrl = (process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000').replace(/\/+$/, '');
 
 function App() {
   const [messages, setMessages] = useState([]);
